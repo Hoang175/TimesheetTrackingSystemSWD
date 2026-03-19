@@ -15,7 +15,8 @@ namespace TimesheetTrackingSystemSWD.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            //return View();
+            return Redirect("/TimesheetTrackingSystem/login");
         }
 
         public IActionResult Privacy()
