@@ -1,0 +1,28 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Timesheet Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    @RenderSection("Styles", required: false)
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        @await Html.PartialAsync("_AdminSidebar")
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

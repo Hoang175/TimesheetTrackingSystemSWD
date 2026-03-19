@@ -1,0 +1,161 @@
+﻿@{
+    Layout = null;
+}
+@model TimesheetTrackingSystemSWD.BLL.DTOs.LoginDTO
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Timesheet Tracking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 h-screen font-sans antialiased text-gray-900">
+
+    <div class="flex min-h-screen">
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white shadow-2xl z-10">
+            <div class="w-full max-w-md space-y-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-regular fa-clock text-3xl text-emerald-600"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-gray-900">
+                        Timesheet Tracking
+                    </h2>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Quản lý thời gian làm việc hiệu quả & thông minh
+                    </p>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700 font-medium">@ViewBag.Error</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <form class="mt-8 space-y-6" method="post" asp-controller="Auth" asp-action="Login">
+                    @Html.AntiForgeryToken()
+
+                    <div class="space-y-4">
+                        <div>
+                            <label asp-for="Username" class="block text-sm font-medium text-gray-700">Tên đăng nhập</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa-regular fa-user text-gray-400"></i>
+                                </div>
+                                <input asp-for="Username" type="text" required
+                                       class="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50 outline-none border"
+                                       placeholder="Nhập tài khoản của bạn" />
+                            </div>
+                            <span asp-validation-for="Username" class="text-xs text-red-500 mt-1"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-lock text-gray-400"></i>
+                                </div>
+                                <input asp-for="Password" id="password" type="password" required
+                                       class="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 pr-10 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50 outline-none border"
+                                       placeholder="••••••••" />
+                                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-emerald-600">
+                                    <i id="eyeIcon" class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-xs text-red-500 mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded">
+                            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                                Ghi nhớ tôi
+                            </label>
+                        </div>
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-emerald-600 hover:text-emerald-500 transition-colors">
+                                Quên mật khẩu?
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                            Đăng nhập hệ thống
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-slate-900">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+                 alt="Office working"
+                 class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay" />
+
+            <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-slate-900/80 to-transparent"></div>
+
+            <div class="relative z-10 w-full p-12 flex flex-col justify-end">
+                <blockquote class="space-y-4">
+                    <p class="text-3xl font-semibold text-white leading-snug">
+                        "Thời gian là tài sản quý giá nhất. Hãy để hệ thống của chúng tôi giúp bạn quản lý nó một cách minh bạch và hiệu quả nhất."
+                    </p>
+                    <footer class="text-emerald-300 text-lg">
+                        — Đội ngũ SWD Project 2026
+                    </footer>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const toggleBtn = document.getElementById("togglePassword");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        toggleBtn.addEventListener("click", () => {
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+
+            // Đổi icon FontAwesome
+            if (isPassword) {
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        });
+    </script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '@Html.Raw(TempData["Success"])',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        </script>
+    }
+</body>
+</html>
