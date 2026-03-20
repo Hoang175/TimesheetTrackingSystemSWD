@@ -1,8 +1,57 @@
-﻿@{
+@{
     ViewData["Title"] = "Employee Dashboard";
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
 }
-<h1 class="text-2xl font-bold text-gray-900 mb-6">Trang chủ Nhân viên</h1>
-<div class="p-6 bg-white rounded-xl border border-gray-100 shadow-sm">
-    <p class="text-gray-600">Đừng quên Check-in khi bắt đầu ca làm việc nhé!</p>
+
+<div class="max-w-7xl mx-auto animate-fade-in py-12 px-6">
+    <div class="mb-16">
+        <div class="flex items-center gap-3 text-emerald-500 font-black text-xs uppercase tracking-[0.4em] mb-4">
+            <span class="w-12 h-1 bg-emerald-100 rounded-full"></span>
+            Employee HUB
+        </div>
+        <h1 class="text-6xl font-black text-gray-900 tracking-tighter leading-none mb-6">Trang chủ <br/><span class="text-emerald-600">Nhân viên</span></h1>
+        <p class="text-xl text-gray-400 font-bold max-w-2xl leading-relaxed">Chào mừng bạn quay trở lại workspace. Đừng quên thực hiện Check-in để hệ thống bắt đầu ghi nhận thời gian làm việc của bạn hôm nay!</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <!-- Quick Action: Attendance -->
+        <a href="/TimesheetTrackingSystem/employee/attendance" class="group bg-white p-10 rounded-[50px] shadow-2xl border-2 border-emerald-50 hover:bg-emerald-600 hover:scale-[1.05] transition-all duration-500 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-50 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            <div class="w-20 h-20 rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mb-12 group-hover:bg-white/20 group-hover:text-white group-hover:rotate-12 transition-all">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <h3 class="text-3xl font-black text-gray-800 tracking-tighter mb-4 group-hover:text-white uppercase transition-colors">Check-in / Out</h3>
+            <p class="text-gray-400 font-bold leading-relaxed group-hover:text-emerald-100 transition-colors">Thực hiện điểm danh hàng ngày để đảm bảo quyền lợi và tính chính xác cho bảng công.</p>
+        </a>
+
+        <!-- Quick Action: Timesheet -->
+        <a href="/TimesheetTrackingSystem/employee/mytimesheet" class="group bg-white p-10 rounded-[50px] shadow-2xl border-2 border-emerald-50 hover:bg-emerald-600 hover:scale-[1.05] transition-all duration-500 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-50 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            <div class="w-20 h-20 rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mb-12 group-hover:bg-white/20 group-hover:text-white group-hover:-rotate-12 transition-all">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <h3 class="text-3xl font-black text-gray-800 tracking-tighter mb-4 group-hover:text-white uppercase transition-colors">Nộp Timesheet</h3>
+            <p class="text-gray-400 font-bold leading-relaxed group-hover:text-emerald-100 transition-colors">Xem lại lịch sử làm việc trong tuần và thực hiện nộp bảng công phê duyệt.</p>
+        </a>
+
+        <!-- Info Card -->
+        <div class="bg-gray-900 p-10 rounded-[50px] shadow-2xl relative overflow-hidden group">
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500 rounded-full opacity-10"></div>
+            <div class="w-20 h-20 rounded-3xl bg-emerald-600 text-white flex items-center justify-center text-3xl mb-12 transform group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <h3 class="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Nhắc nhở</h3>
+            <p class="text-gray-400 font-bold leading-relaxed tracking-tight">Hệ thống sẽ tự động gửi email thông báo khi Timesheet của bạn được phê duyệt hoặc bị từ chối.</p>
+        </div>
+    </div>
 </div>
+
+<style>
+    @@keyframes fade-in {
+        from { opacity: 0; transform: scale(0.95) translateY(40px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+</style>
