@@ -20,7 +20,23 @@ namespace TimesheetTrackingSystemSWD.BLL.Services
 
             if (user == null || user.Status != "Active") return null;
 
-            if (user.PasswordHash != loginDto.Password) return null;
+            //if (user.PasswordHash != loginDto.Password) return null;
+            // KIỂM TRA MẬT KHẨU AN TOÀN
+            bool isPasswordValid = false;
+
+            // Dấu hiệu "$2" ở đầu chuỗi là đặc trưng của thuật toán BCrypt
+            if (user.PasswordHash.StartsWith("$2"))
+            {
+                // Giải mã và so sánh
+                isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+            }
+            else
+            {
+                // Fallback: Dành cho các tài khoản cũ trong DB lúc chưa cài BCrypt (mật khẩu "123")
+                isPasswordValid = (user.PasswordHash == loginDto.Password);
+            }
+
+            if (!isPasswordValid) return null;
 
             return new UserSessionDTO
             {

@@ -1,0 +1,358 @@
+﻿@model IEnumerable<TimesheetTrackingSystemSWD.DAL.Models.User>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Quản Lý Tài Khoản";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    int pageSize = 10;
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int stt = (currentPage - 1) * pageSize;
+
+    string keyword = ViewBag.Keyword as string;
+    int? roleId = ViewBag.RoleId as int?;
+    string status = ViewBag.Status as string;
+
+    var currentUserIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    int.TryParse(currentUserIdStr, out int currentUserId);
+}
+
+<div class="px-8 py-6 bg-white border-b border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                <i class="fa-solid fa-users-gear"></i>
+            </span>
+            Tài Khoản Hệ Thống
+        </h2>
+        <p class="text-sm text-gray-500 mt-1 ml-14">Quản lý phân quyền, mật khẩu và trạng thái truy cập.</p>
+    </div>
+</div>
+
+<div class="px-8 py-5 bg-gray-50 border-b border-gray-200 sticky top-0 z-20">
+    <div class="flex flex-col xl:flex-row gap-4 justify-between items-center">
+        <form method="get" class="flex flex-wrap gap-3 items-center w-full xl:w-auto">
+            <div class="relative group w-full sm:w-64">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                <input name="keyword" value="@keyword" placeholder="Tìm username, email, tên..." class="w-full pl-10 pr-3 py-2.5 bg-white border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm transition-all" />
+            </div>
+
+            <div class="w-full sm:w-48">
+                <select name="roleId" asp-items="@ViewBag.Roles" class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm cursor-pointer">
+                    <option value="">-- Phân quyền --</option>
+                </select>
+            </div>
+
+            <div class="w-full sm:w-40">
+                <select name="status" class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm cursor-pointer">
+                    <option value="">-- Trạng thái --</option>
+                    <option value="Active" selected="@(status == "Active")">Đang hoạt động</option>
+                    <option value="Locked" selected="@(status == "Locked")">Đã khóa</option>
+                </select>
+            </div>
+
+            <button type="submit" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors">
+                <i class="fa-solid fa-filter mr-1"></i> Lọc
+            </button>
+            <a href="/TimesheetTrackingSystem/admin/users" class="bg-white hover:bg-gray-100 text-gray-600 border border-gray-300 px-3 py-2.5 rounded-xl text-sm transition-colors" title="Làm mới">
+                <i class="fa-solid fa-rotate-right"></i>
+            </a>
+        </form>
+
+        <div class="flex bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+            <button id="btnGridView" onclick="switchView('grid')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-gray-500 hover:text-emerald-600">
+                <i class="fa-solid fa-border-all mr-1"></i> Grid
+            </button>
+            <button id="btnListView" onclick="switchView('list')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-gray-500 hover:text-emerald-600">
+                <i class="fa-solid fa-list mr-1"></i> List
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="p-8 min-h-screen">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                <i class="fa-solid fa-user-slash text-3xl text-gray-300"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-600">Không tìm thấy tài khoản nào</h3>
+        </div>
+    }
+    else
+    {
+        <div id="gridViewContainer">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @foreach (var item in Model)
+                {
+                    bool isActive = (item.Status == "Active");
+                    bool isSelf = (item.UserId == currentUserId);
+                    string initials = !string.IsNullOrEmpty(item.FullName) ? item.FullName.Substring(0, 1).ToUpper() : "U";
+                    // Đồng bộ Role badge về các tone nhẹ nhàng phù hợp
+                    string roleColor = item.Role?.RoleName == "Admin" ? "bg-red-100 text-red-700 border-red-200" : (item.Role?.RoleName == "HR" ? "bg-blue-100 text-blue-700 border-blue-200" : "bg-emerald-100 text-emerald-700 border-emerald-200");
+
+                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative flex flex-col h-full">
+                        <div class="absolute top-4 right-4">
+                            @if (isActive)
+                            {
+                                <span class="px-2 py-1 rounded text-[10px] font-bold bg-green-50 text-green-600 border border-green-100">Active</span>
+                            }
+                            else
+                            {
+
+                                <span class="px-2 py-1 rounded text-[10px] font-bold bg-red-50 text-red-600 border border-red-100">Locked</span>
+                            }
+                        </div>
+
+                        <div class="flex flex-col items-center mb-4 mt-2">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 text-white flex items-center justify-center font-bold text-xl shadow-md mb-3">
+                                @initials
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 text-center line-clamp-1">@item.FullName</h3>
+                            <span class="mt-1 px-2.5 py-0.5 border rounded-full text-[10px] font-bold uppercase tracking-wide @roleColor">@item.Role?.RoleName</span>
+                        </div>
+
+                        <div class="space-y-2 mb-6 text-sm text-gray-500 flex-grow border-t border-gray-100 pt-4">
+                            <div class="flex items-center justify-between"><span class="text-gray-400 text-xs">Username:</span> <span class="font-mono font-bold text-gray-700">@item.Username</span></div>
+                            <div class="flex items-center justify-between"><span class="text-gray-400 text-xs">Email:</span> <span class="truncate ml-2">@item.Email</span></div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 pt-4 border-t border-gray-100">
+                            <button @(isSelf ? "disabled" : "") onclick="openRoleModal(@item.UserId, @item.RoleId, '@item.FullName')" class="py-2 flex items-center justify-center rounded-lg border border-gray-200 text-teal-600 hover:bg-teal-50 hover:border-teal-200 transition-colors @(isSelf ? "opacity-50 cursor-not-allowed" : "")" title="Phân quyền">
+                                <i class="fa-solid fa-user-tag"></i>
+                            </button>
+
+                            <button onclick="openPasswordModal(@item.UserId, '@item.FullName')" class="py-2 flex items-center justify-center rounded-lg border border-gray-200 text-orange-500 hover:bg-orange-50 hover:border-orange-200 transition-colors" title="Reset Mật khẩu">
+                                <i class="fa-solid fa-key"></i>
+                            </button>
+
+                            @if (isSelf)
+                            {
+                                <button disabled class="py-2 flex items-center justify-center rounded-lg bg-gray-50 text-gray-300 border border-gray-100 cursor-not-allowed" title="Không thể tự khóa"><i class="fa-solid fa-lock"></i></button>
+                            }
+                            else if (isActive)
+                            {
+                                <button onclick="confirmToggleStatus(@item.UserId, 'Lock')" class="py-2 flex items-center justify-center rounded-lg border border-gray-200 text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors" title="Khóa tài khoản"><i class="fa-solid fa-lock"></i></button>
+                                <form id="form-toggle-@item.UserId" action="/TimesheetTrackingSystem/admin/users/toggle-status/@item.UserId" method="post" class="hidden"></form>
+                            }
+                            else
+                            {
+                                <button onclick="confirmToggleStatus(@item.UserId, 'Unlock')" class="py-2 flex items-center justify-center rounded-lg border border-gray-200 text-green-600 hover:bg-green-50 hover:border-green-200 transition-colors" title="Mở khóa tài khoản"><i class="fa-solid fa-unlock"></i></button>
+                                <form id="form-toggle-@item.UserId" action="/TimesheetTrackingSystem/admin/users/toggle-status/@item.UserId" method="post" class="hidden"></form>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div id="listViewContainer" class="hidden">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-gray-600 font-bold uppercase text-xs tracking-wider border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-4 text-center">STT</th>
+                            <th class="px-6 py-4">Tài khoản</th>
+                            <th class="px-6 py-4">Username</th>
+                            <th class="px-6 py-4">Phân quyền</th>
+                            <th class="px-6 py-4 text-center">Trạng thái</th>
+                            <th class="px-6 py-4 text-right">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @foreach (var item in Model)
+                        {
+                            bool isActive = (item.Status == "Active");
+                            bool isSelf = (item.UserId == currentUserId);
+                            string roleColor = item.Role?.RoleName == "Admin" ? "bg-red-100 text-red-700" : (item.Role?.RoleName == "HR" ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700");
+
+                            <tr class="hover:bg-emerald-50/30 transition-colors">
+                                <td class="px-6 py-4 text-center text-gray-400 font-medium">@(++stt)</td>
+                                <td class="px-6 py-4">
+                                    <div class="font-bold text-gray-700">@item.FullName</div>
+                                    <div class="text-xs text-gray-400">@item.Email</div>
+                                </td>
+                                <td class="px-6 py-4"><span class="font-mono font-bold text-emerald-600">@item.Username</span></td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide @roleColor">@item.Role?.RoleName</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    @if (isActive)
+                                    {
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">Active</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">Locked</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button @(isSelf ? "disabled" : "") onclick="openRoleModal(@item.UserId, @item.RoleId, '@item.FullName')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-teal-600 hover:bg-teal-600 hover:text-white transition-all shadow-sm @(isSelf ? "opacity-50 cursor-not-allowed" : "")" title="Phân quyền"><i class="fa-solid fa-user-tag text-xs"></i></button>
+                                        <button onclick="openPasswordModal(@item.UserId, '@item.FullName')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-orange-500 hover:bg-orange-500 hover:text-white transition-all shadow-sm" title="Reset mật khẩu"><i class="fa-solid fa-key text-xs"></i></button>
+
+                                        @if (isSelf)
+                                        {
+                                            <button disabled class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 border border-gray-200 text-gray-300 cursor-not-allowed"><i class="fa-solid fa-lock text-xs"></i></button>
+                                        }
+                                        else if (isActive)
+                                        {
+                                            <button onclick="confirmToggleStatus(@item.UserId, 'Lock')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm" title="Khóa"><i class="fa-solid fa-lock text-xs"></i></button>
+                                        }
+                                        else
+                                        {
+                                            <button onclick="confirmToggleStatus(@item.UserId, 'Unlock')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-sm" title="Mở khóa"><i class="fa-solid fa-unlock text-xs"></i></button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <div class="mt-8 flex justify-center pb-8">
+                <nav class="inline-flex rounded-xl shadow-sm bg-white p-1.5 gap-1 border border-gray-200">
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <a href="?page=@i&keyword=@keyword&status=@status&roleId=@roleId"
+                           class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold transition-all @(i == currentPage ? "bg-emerald-600 text-white shadow-md scale-105" : "text-gray-600 hover:bg-gray-100")">
+                            @i
+                        </a>
+                    }
+                </nav>
+            </div>
+        }
+    }
+</div>
+
+<div id="roleModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate__animated animate__fadeInUp animate__faster">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-user-tag text-teal-500 mr-2"></i>Cập Nhật Phân Quyền</h3>
+            <button onclick="closeRoleModal()" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <form action="/TimesheetTrackingSystem/admin/users/change-role" method="post" class="p-6">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="UserId" id="roleModal_UserId" />
+
+            <div class="mb-4 text-center">
+                <p class="text-sm text-gray-500">Tài khoản:</p>
+                <p class="text-lg font-bold text-teal-600" id="roleModal_FullName"></p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Chọn nhóm quyền mới <span class="text-red-500">*</span></label>
+                <select name="RoleId" id="roleModal_RoleId" asp-items="@ViewBag.Roles" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none transition-all font-bold text-gray-700 cursor-pointer"></select>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeRoleModal()" class="px-5 py-2.5 rounded-xl bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition-all">Huỷ</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal-600 text-white font-bold shadow-md hover:bg-teal-700 transition-all">Xác nhận đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="passwordModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate__animated animate__fadeInUp animate__faster">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-key text-orange-500 mr-2"></i>Reset Mật Khẩu</h3>
+            <button onclick="closePasswordModal()" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <form action="/TimesheetTrackingSystem/admin/users/reset-password" method="post" class="p-6">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="UserId" id="passwordModal_UserId" />
+
+            <div class="mb-4 text-center">
+                <p class="text-sm text-gray-500">Tài khoản:</p>
+                <p class="text-lg font-bold text-orange-600" id="passwordModal_FullName"></p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Mật khẩu mới <span class="text-red-500">*</span></label>
+                <input name="NewPassword" type="text" required minlength="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition-all font-mono font-bold text-gray-700" placeholder="Nhập ít nhất 3 ký tự..." />
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closePasswordModal()" class="px-5 py-2.5 rounded-xl bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition-all">Huỷ</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white font-bold shadow-md hover:bg-orange-600 transition-all">Đổi mật khẩu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const savedMode = localStorage.getItem('userViewMode') || 'grid';
+            switchView(savedMode);
+
+            let successMsg = '@TempData["Success"]';
+            let errorMsg = '@TempData["Error"]';
+            if (successMsg) Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: successMsg, showConfirmButton: false, timer: 3000 });
+            if (errorMsg) Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: errorMsg, showConfirmButton: false, timer: 3000 });
+        });
+
+        function switchView(mode) {
+            const listContainer = document.getElementById('listViewContainer');
+            const gridContainer = document.getElementById('gridViewContainer');
+            const btnList = document.getElementById('btnListView');
+            const btnGrid = document.getElementById('btnGridView');
+
+            if (mode === 'grid') {
+                listContainer.classList.add('hidden');
+                gridContainer.classList.remove('hidden');
+                btnGrid.classList.add('bg-emerald-100', 'text-emerald-700');
+                btnList.classList.remove('bg-emerald-100', 'text-emerald-700');
+            } else {
+                gridContainer.classList.add('hidden');
+                listContainer.classList.remove('hidden');
+                btnList.classList.add('bg-emerald-100', 'text-emerald-700');
+                btnGrid.classList.remove('bg-emerald-100', 'text-emerald-700');
+            }
+            localStorage.setItem('userViewMode', mode);
+        }
+
+        function confirmToggleStatus(id, actionType) {
+            let title = actionType === 'Lock' ? 'Khóa tài khoản?' : 'Mở khóa tài khoản?';
+            let text = actionType === 'Lock' ? 'Người dùng sẽ không thể đăng nhập vào hệ thống.' : 'Cho phép người dùng truy cập lại hệ thống.';
+            let btnColor = actionType === 'Lock' ? '#ef4444' : '#10b981';
+
+            Swal.fire({
+                title: title, text: text, icon: 'warning', showCancelButton: true,
+                confirmButtonColor: btnColor, confirmButtonText: 'Đồng ý', cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-toggle-' + id).submit();
+                }
+            });
+        }
+
+        function openRoleModal(userId, currentRoleId, fullName) {
+            document.getElementById('roleModal_UserId').value = userId;
+            document.getElementById('roleModal_RoleId').value = currentRoleId;
+            document.getElementById('roleModal_FullName').innerText = fullName;
+            document.getElementById('roleModal').classList.remove('hidden');
+        }
+        function closeRoleModal() {
+            document.getElementById('roleModal').classList.add('hidden');
+        }
+
+        function openPasswordModal(userId, fullName) {
+            document.getElementById('passwordModal_UserId').value = userId;
+            document.getElementById('passwordModal_FullName').innerText = fullName;
+            document.getElementById('passwordModal').classList.remove('hidden');
+            document.querySelector('input[name="NewPassword"]').value = '';
+        }
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+        }
+    </script>
+}

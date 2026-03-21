@@ -23,7 +23,9 @@
         <form action="/TimesheetTrackingSystem/admin/employees/edit/@Model.EmployeeId" method="post" class="space-y-6">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="EmployeeId" />
-            <input type="hidden" asp-for="HasAccount" /> <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <input type="hidden" asp-for="HasAccount" />
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-5 pb-3 border-b border-gray-100 flex items-center gap-2">
                     <i class="fa-solid fa-pen-to-square text-emerald-500"></i> Chỉnh Sửa Thông Tin
                 </h3>
@@ -57,14 +59,20 @@
 
             @if (Model.HasAccount)
             {
-                <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-5 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-                        <i class="fa-solid fa-check"></i>
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">Tài khoản đã được cấp</p>
+                            <p class="text-xs text-gray-500">Nhân viên này đã có quyền truy cập vào hệ thống.</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="font-bold text-gray-800">Tài khoản đã được cấp</p>
-                        <p class="text-xs text-gray-500">Nhân viên này đã có quyền truy cập vào hệ thống.</p>
-                    </div>
+
+                    <a href="/TimesheetTrackingSystem/admin/users?keyword=@Model.Email" class="px-5 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all shadow-sm flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-users-gear"></i> Xem tài khoản
+                    </a>
                 </div>
             }
             else
@@ -82,9 +90,8 @@
                     <p class="text-sm text-gray-500 mb-4 pb-4 border-b border-gray-100">Bật tuỳ chọn này nếu bạn muốn cấp quyền đăng nhập cho nhân viên lúc này.</p>
 
                     <div id="accountFields" class="hidden space-y-4">
-
                         <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100 text-sm text-indigo-800">
-                            <i class="fa-solid fa-circle-info mr-2"></i> <strong>Username</strong> sẽ được hệ thống tạo tự động dựa trên Tên và Mã NV.(Ví dụ: HoangDHEMP0001) Role mặc định là <strong>Employee</strong>.
+                            <i class="fa-solid fa-circle-info mr-2"></i> <strong>Username</strong> sẽ được hệ thống tạo tự động dựa trên Tên và Mã NV. Role mặc định là <strong>Employee</strong>.
                         </div>
 
                         <div>
