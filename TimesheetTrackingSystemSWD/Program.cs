@@ -23,6 +23,9 @@ namespace TimesheetTrackingSystemSWD
             // DI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            //builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped<IAdEmployeeRepository, AdEmployeeRepository>();
+            builder.Services.AddScoped<IAdEmployeeService, AdEmployeeService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
