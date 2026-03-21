@@ -23,6 +23,12 @@ namespace TimesheetTrackingSystemSWD
             // DI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAdDepartmentRepository, AdDepartmentRepository>();
+            builder.Services.AddScoped<IAdDepartmentService, AdDepartmentService>();
+            builder.Services.AddScoped<IAdEmployeeRepository, AdEmployeeRepository>();
+            builder.Services.AddScoped<IAdEmployeeService, AdEmployeeService>();
+            builder.Services.AddScoped<IAdUserRepository, AdUserRepository>();
+            builder.Services.AddScoped<IAdUserService, AdUserService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
