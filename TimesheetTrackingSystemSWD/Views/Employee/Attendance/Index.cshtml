@@ -1,0 +1,222 @@
+@model TimesheetTrackingSystemSWD.DAL.Models.AttendanceRecord
+@{
+    ViewData["Title"] = "Check-in / Out";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+    var today = DateTime.Today;
+}
+
+<div class="max-w-4xl mx-auto px-4 py-12 animate-fade-in font-sans">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-black text-emerald-900 tracking-tight mb-2 uppercase">Workspace Check-in</h1>
+        <p class="text-emerald-600 font-bold opacity-70">Chào buổi sáng! Hãy bắt đầu ngày làm việc đầy năng lượng.</p>
+        <div class="mt-6 inline-flex items-center px-6 py-2 bg-white text-emerald-700 rounded-2xl text-md font-black border-2 border-emerald-100 shadow-xl">
+            <i class="fa-solid fa-clock-rotate-left mr-3 animate-pulse"></i>
+            <span id="live-clock">@DateTime.Now.ToString("HH:mm:ss")</span>
+            <span class="mx-3 text-emerald-200">|</span>
+            <span class="text-gray-500">@today.ToString("dd/MM/yyyy")</span>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="mb-8 bg-emerald-500 text-white p-5 rounded-3xl shadow-emerald-200 shadow-lg animate-bounce-subtle flex items-center">
+            <i class="fa-solid fa-square-check text-2xl mr-4"></i>
+            <p class="font-black">@TempData["SuccessMessage"]</p>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="mb-8 bg-white border-2 border-amber-400 p-5 rounded-3xl shadow-xl flex items-center">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-2xl mr-4"></i>
+            <p class="font-black text-amber-800">@TempData["ErrorMessage"]</p>
+        </div>
+    }
+
+    <div class="bg-white rounded-[40px] shadow-2xl border border-gray-100 overflow-hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2">
+            <!-- Left Side: Status & Controls -->
+            <div class="p-10 md:p-14 flex flex-col justify-center items-center border-b md:border-b-0 md:border-r border-gray-100 bg-emerald-50/20">
+                <div class="mb-12 text-center">
+                    <p class="text-[10px] font-black text-emerald-300 uppercase tracking-[0.3em] mb-4">Current Status</p>
+                    @if (Model == null)
+                    {
+                        <div class="p-8 bg-white rounded-full border-4 border-gray-100 shadow-inner flex items-center justify-center relative">
+                             <div class="absolute -top-2 -right-2 w-6 h-6 bg-gray-400 rounded-full border-4 border-white"></div>
+                             <i class="fa-solid fa-user-slash text-4xl text-gray-300"></i>
+                        </div>
+                        <p class="mt-4 font-black text-gray-400 text-xl">OFF-DUTY</p>
+                    }
+                    else if (Model.CheckOutTime == null)
+                    {
+                        <div class="p-8 bg-white rounded-full border-4 border-emerald-100 shadow-inner flex items-center justify-center relative">
+                             <div class="absolute -top-2 -right-2 w-6 h-6 bg-emerald-500 rounded-full border-4 border-white animate-ping"></div>
+                             <i class="fa-solid fa-user-check text-4xl text-emerald-500"></i>
+                        </div>
+                        <p class="mt-4 font-black text-emerald-600 text-xl tracking-tighter">WORKING NOW</p>
+                    }
+                    else
+                    {
+                        <div class="p-8 bg-white rounded-full border-4 border-teal-100 shadow-inner flex items-center justify-center relative">
+                             <div class="absolute -top-2 -right-2 w-6 h-6 bg-teal-500 rounded-full border-4 border-white"></div>
+                             <i class="fa-solid fa-flag-checkered text-4xl text-teal-500"></i>
+                        </div>
+                        <p class="mt-4 font-black text-teal-600 text-xl tracking-tighter">DONE FOR TODAY</p>
+                    }
+                </div>
+
+                <div class="w-full space-y-4">
+                    @if (Model == null)
+                    {
+                        <form asp-action="CheckIn" method="post">
+                            <button type="submit" class="w-full group relative flex justify-center py-6 px-4 border-b-4 border-emerald-800 text-xl font-black rounded-2xl text-white bg-emerald-600 hover:bg-emerald-700 transition-all transform active:translate-y-1 shadow-emerald-500/20 shadow-xl">
+                                CHECK-IN TO START
+                            </button>
+                        </form>
+                    }
+                    else if (Model.CheckOutTime == null)
+                    {
+                        <form asp-action="CheckOut" method="post">
+                            <button type="submit" class="w-full group relative flex justify-center py-6 px-4 border-b-4 border-teal-800 text-xl font-black rounded-2xl text-white bg-teal-600 hover:bg-teal-700 transition-all transform active:translate-y-1 shadow-teal-500/20 shadow-xl">
+                                CHECK-OUT TO FINISH
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="w-full py-6 px-4 border-4 border-dotted border-gray-100 text-gray-300 font-black rounded-2xl flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-circle-check"></i>
+                            TAKE A REST NOW
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Right Side: Details -->
+            <div class="p-10 md:p-14 flex flex-col justify-center">
+                <h3 class="text-xs font-black text-emerald-400 uppercase tracking-widest mb-8 flex items-center gap-2">
+                    <span class="w-8 h-[2px] bg-emerald-100"></span>
+                    Shift Details
+                </h3>
+                
+                <div class="space-y-6">
+                    <div class="group flex items-center justify-between p-6 bg-gray-50 rounded-3xl border-2 border-transparent hover:border-emerald-200 hover:bg-white transition-all duration-300">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-white text-emerald-600 flex items-center justify-center shadow-lg transform group-hover:-rotate-3 transition-transform">
+                                <i class="fa-solid fa-door-open text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase">Check-in Time</p>
+                                <p class="text-2xl font-black text-gray-800">@(Model?.CheckInTime?.ToString("HH:mm") ?? "-- : --")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group flex items-center justify-between p-6 bg-gray-50 rounded-3xl border-2 border-transparent hover:border-emerald-200 hover:bg-white transition-all duration-300">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-white text-teal-600 flex items-center justify-center shadow-lg transform group-hover:rotate-3 transition-transform">
+                                <i class="fa-solid fa-door-closed text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase">Check-out Time</p>
+                                <p class="text-2xl font-black text-gray-800">@(Model?.CheckOutTime?.ToString("HH:mm") ?? "-- : --")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model?.CheckInTime != null && Model?.CheckOutTime != null)
+                    {
+                        <div class="mt-8 p-8 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-3xl shadow-xl text-white transform hover:scale-[1.02] transition-transform">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-black opacity-70 uppercase tracking-widest mb-1">Total Hours Worked</p>
+                                    <p class="text-4xl font-black">@((Model.CheckOutTime.Value - Model.CheckInTime.Value).TotalHours.ToString("F2")) <span class="text-lg">Hours</span></p>
+                                </div>
+                                <i class="fa-solid fa-hourglass-half text-4xl opacity-20"></i>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance History Table -->
+    <div class="mt-12 bg-white rounded-[40px] shadow-2xl border border-gray-100 p-8 md:p-12">
+        <h2 class="text-2xl font-black text-emerald-900 mb-8 uppercase flex items-center gap-3">
+            <i class="fa-solid fa-list-check text-emerald-500"></i> Lịch Sử Chấm Công Tháng @today.Month
+        </h2>
+        
+        <div class="overflow-x-auto rounded-2xl border border-gray-100">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-emerald-50 text-emerald-800 text-sm uppercase tracking-wider font-black">
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap">Ngày</th>
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap">Giờ vào (Check-in)</th>
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap">Giờ ra (Check-out)</th>
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap text-right">Tổng giờ (h)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    @{
+                        var records = ViewData["MonthlyRecords"] as IEnumerable<TimesheetTrackingSystemSWD.DAL.Models.AttendanceRecord>;
+                        if (records != null && records.Any())
+                        {
+                            foreach (var rec in records.OrderByDescending(x => x.WorkDate))
+                            {
+                                var totalHours = (rec.CheckInTime.HasValue && rec.CheckOutTime.HasValue) 
+                                    ? (rec.CheckOutTime.Value - rec.CheckInTime.Value).TotalHours.ToString("F2") 
+                                    : "--";
+                                    
+                                <tr class="border-b border-gray-50 hover:bg-emerald-50/30 transition-colors">
+                                    <td class="p-5 font-bold text-gray-900">@rec.WorkDate.ToString("dd/MM/yyyy")</td>
+                                    <td class="p-5">@(rec.CheckInTime?.ToString("HH:mm:ss") ?? "--:--:--")</td>
+                                    <td class="p-5">@(rec.CheckOutTime?.ToString("HH:mm:ss") ?? "--:--:--")</td>
+                                    <td class="p-5 text-right font-black text-emerald-600">@totalHours</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-gray-400 font-medium italic">
+                                    Không có dữ liệu chấm công cho tháng này.
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const clock = document.getElementById('live-clock');
+        if (clock) {
+            clock.textContent = now.getHours().toString().padStart(2, '0') + ':' + 
+                              now.getMinutes().toString().padStart(2, '0') + ':' + 
+                              now.getSeconds().toString().padStart(2, '0');
+        }
+    }
+    setInterval(updateClock, 1000);
+</script>
+
+<style>
+    @@keyframes fade-in {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @@keyframes bounce-subtle {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+    }
+    .animate-bounce-subtle {
+        animation: bounce-subtle 3s infinite ease-in-out;
+    }
+</style>
