@@ -25,12 +25,16 @@ namespace TimesheetTrackingSystemSWD
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
             builder.Services.AddScoped<ISystemLogRepository, SystemLogRepository>();
+            builder.Services.AddScoped<IAdDepartmentRepository, AdDepartmentRepository>();
+            builder.Services.AddScoped<IAdEmployeeRepository, AdEmployeeRepository>();
+            builder.Services.AddScoped<IAdUserRepository, AdUserRepository>();
+
             builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
-            builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
             builder.Services.AddScoped<ITimesheetService, TimesheetService>();
-            builder.Services.AddScoped<ISystemLogRepository, SystemLogRepository>();
+            builder.Services.AddScoped<IAdDepartmentService, AdDepartmentService>();
+            builder.Services.AddScoped<IAdEmployeeService, AdEmployeeService>();
+            builder.Services.AddScoped<IAdUserService, AdUserService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
