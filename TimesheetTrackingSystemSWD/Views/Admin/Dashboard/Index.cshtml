@@ -1,23 +1,62 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Admin Dashboard";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-    <p class="text-sm text-gray-500 mt-1">Tổng quan tình hình nhân sự hệ thống Timesheet.</p>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-        <div class="flex justify-between items-center">
-            <div>
-                <p class="text-sm font-medium text-gray-500">Tổng User</p>
-                <p class="text-3xl font-bold text-gray-900 mt-1">5</p>
-            </div>
-            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl">
-                <i class="fa-solid fa-users"></i>
-            </div>
+<div class="max-w-7xl mx-auto animate-fade-in py-12 px-6">
+    <div class="mb-16">
+        <div class="flex items-center gap-3 text-emerald-500 font-black text-xs uppercase tracking-[0.4em] mb-4">
+            <span class="w-12 h-1 bg-emerald-100 rounded-full"></span>
+            Admin HUB
         </div>
+        <h1 class="text-6xl font-black text-gray-900 tracking-tighter leading-none mb-6">Trang chủ <br /><span class="text-emerald-600">Quản trị</span></h1>
+        <p class="text-xl text-gray-400 font-bold max-w-2xl leading-relaxed">Tổng quan tình hình hệ thống Timesheet. Tại đây bạn có thể quản lý cơ cấu tổ chức, hồ sơ nhân sự và phân quyền truy cập.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <a href="/TimesheetTrackingSystem/admin/employees" class="group bg-white p-10 rounded-[50px] shadow-2xl border-2 border-emerald-50 hover:bg-emerald-600 hover:scale-[1.05] transition-all duration-500 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-50 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            <div class="w-20 h-20 rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mb-12 group-hover:bg-white/20 group-hover:text-white group-hover:rotate-12 transition-all">
+                <i class="fa-solid fa-id-card-clip"></i>
+            </div>
+            <h3 class="text-3xl font-black text-gray-800 tracking-tighter mb-4 group-hover:text-white uppercase transition-colors">Nhân Sự</h3>
+            <p class="text-gray-400 font-bold leading-relaxed group-hover:text-emerald-100 transition-colors">Quản lý hồ sơ, cập nhật thông tin và điều chuyển trạng thái nhân viên.</p>
+        </a>
+
+        <a href="/TimesheetTrackingSystem/admin/departments" class="group bg-white p-10 rounded-[50px] shadow-2xl border-2 border-emerald-50 hover:bg-emerald-600 hover:scale-[1.05] transition-all duration-500 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-50 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            <div class="w-20 h-20 rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mb-12 group-hover:bg-white/20 group-hover:text-white group-hover:-rotate-12 transition-all">
+                <i class="fa-solid fa-building-user"></i>
+            </div>
+            <h3 class="text-3xl font-black text-gray-800 tracking-tighter mb-4 group-hover:text-white uppercase transition-colors">Phòng Ban</h3>
+            <p class="text-gray-400 font-bold leading-relaxed group-hover:text-emerald-100 transition-colors">Thiết lập cơ cấu tổ chức và theo dõi số lượng nhân sự thuộc các phòng ban.</p>
+        </a>
+
+        <a href="/TimesheetTrackingSystem/admin/users" class="bg-gray-900 p-10 rounded-[50px] shadow-2xl relative overflow-hidden group hover:scale-[1.05] transition-all duration-500 block">
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-500 rounded-full opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <div class="w-20 h-20 rounded-3xl bg-indigo-600 text-white flex items-center justify-center text-3xl mb-12 transform group-hover:scale-110 transition-transform">
+                <i class="fa-solid fa-users-gear"></i>
+            </div>
+            <h3 class="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Tài Khoản</h3>
+            <p class="text-gray-400 font-bold leading-relaxed tracking-tight group-hover:text-gray-300 transition-colors">Phân quyền truy cập, khóa tài khoản và thiết lập lại mật khẩu đăng nhập.</p>
+        </a>
     </div>
 </div>
+
+<style>
+    @@keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+</style>

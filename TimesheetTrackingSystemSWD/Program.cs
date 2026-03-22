@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using TimesheetTrackingSystemSWD.BLL.Interfaces;
 using TimesheetTrackingSystemSWD.BLL.Services;
@@ -23,6 +23,11 @@ namespace TimesheetTrackingSystemSWD
             // DI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+            builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
+            builder.Services.AddScoped<ITimesheetService, TimesheetService>();
+            builder.Services.AddScoped<ISystemLogRepository, SystemLogRepository>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
