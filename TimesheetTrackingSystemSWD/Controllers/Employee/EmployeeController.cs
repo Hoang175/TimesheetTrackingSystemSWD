@@ -29,6 +29,11 @@ namespace TimesheetTrackingSystemSWD.Controllers.Employee
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var todayRecord = await _attendanceService.GetTodayAttendanceAsync(userId);
+            
+            var today = DateTime.Today;
+            var monthlyRecords = await _attendanceService.GetMonthlyAttendanceAsync(userId, today.Year, today.Month);
+            ViewData["MonthlyRecords"] = monthlyRecords;
+
             return View("~/Views/Employee/Attendance/Index.cshtml", todayRecord);
         }
 
@@ -37,9 +42,19 @@ namespace TimesheetTrackingSystemSWD.Controllers.Employee
         public async Task<IActionResult> CheckIn()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var result = await _attendanceService.CheckInAsync(userId);
-            if (result) TempData["SuccessMessage"] = "Check-in thành công!";
-            else TempData["ErrorMessage"] = "Bạn đã check-in hôm nay rồi.";
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
+            
+            try
+            {
+                var result = await _attendanceService.CheckInAsync(userId, ipAddress);
+                if (result) TempData["SuccessMessage"] = "Check-in thành công!";
+                else TempData["ErrorMessage"] = "Bạn đã check-in hôm nay rồi.";
+            }
+            catch (Exception ex) when (ex.Message == "IP_NOT_ALLOWED")
+            {
+                TempData["ErrorMessage"] = "Vui lòng kết nối Wifi công ty để thực hiện chấm công.";
+            }
+            
             return RedirectToAction("Attendance");
         }
 
@@ -48,9 +63,19 @@ namespace TimesheetTrackingSystemSWD.Controllers.Employee
         public async Task<IActionResult> CheckOut()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var result = await _attendanceService.CheckOutAsync(userId);
-            if (result) TempData["SuccessMessage"] = "Check-out thành công!";
-            else TempData["ErrorMessage"] = "Không thể check-out (Có thể bạn chưa check-in hoặc đã check-out).";
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
+
+            try
+            {
+                var result = await _attendanceService.CheckOutAsync(userId, ipAddress);
+                if (result) TempData["SuccessMessage"] = "Check-out thành công!";
+                else TempData["ErrorMessage"] = "Không thể check-out (Có thể bạn chưa check-in hoặc đã check-out).";
+            }
+            catch (Exception ex) when (ex.Message == "IP_NOT_ALLOWED")
+            {
+                TempData["ErrorMessage"] = "Vui lòng kết nối Wifi công ty để thực hiện chấm công.";
+            }
+
             return RedirectToAction("Attendance");
         }
 

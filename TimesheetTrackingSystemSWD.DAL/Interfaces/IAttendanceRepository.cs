@@ -10,5 +10,6 @@ namespace TimesheetTrackingSystemSWD.DAL.Interfaces
         Task<IEnumerable<AttendanceRecord>> GetAttendanceRecordsByEmployeeIdAndPeriodAsync(int employeeId, DateOnly startDate, DateOnly endDate);
         Task<AttendanceRecord?> GetAttendanceRecordByIdAsync(int attendanceId);
         Task UpdateAttendanceRecordAsync(AttendanceRecord record);
+        Task AddAttendanceRecordAsync(AttendanceRecord record);
     }
 }

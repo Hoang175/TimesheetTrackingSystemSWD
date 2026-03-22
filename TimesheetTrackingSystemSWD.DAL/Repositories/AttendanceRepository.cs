@@ -35,5 +35,11 @@ namespace TimesheetTrackingSystemSWD.DAL.Repositories
             _context.AttendanceRecords.Update(record);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AddAttendanceRecordAsync(AttendanceRecord record)
+        {
+            _context.AttendanceRecords.Add(record);
+            await _context.SaveChangesAsync();
+        }
     }
 }

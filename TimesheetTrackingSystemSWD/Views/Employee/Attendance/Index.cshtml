@@ -140,6 +140,55 @@
             </div>
         </div>
     </div>
+
+    <!-- Attendance History Table -->
+    <div class="mt-12 bg-white rounded-[40px] shadow-2xl border border-gray-100 p-8 md:p-12">
+        <h2 class="text-2xl font-black text-emerald-900 mb-8 uppercase flex items-center gap-3">
+            <i class="fa-solid fa-list-check text-emerald-500"></i> Lịch Sử Chấm Công Tháng @today.Month
+        </h2>
+        
+        <div class="overflow-x-auto rounded-2xl border border-gray-100">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-emerald-50 text-emerald-800 text-sm uppercase tracking-wider font-black">
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap">Ngày</th>
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap">Giờ vào (Check-in)</th>
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap">Giờ ra (Check-out)</th>
+                        <th class="p-5 border-b-2 border-emerald-100 whitespace-nowrap text-right">Tổng giờ (h)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    @{
+                        var records = ViewData["MonthlyRecords"] as IEnumerable<TimesheetTrackingSystemSWD.DAL.Models.AttendanceRecord>;
+                        if (records != null && records.Any())
+                        {
+                            foreach (var rec in records.OrderByDescending(x => x.WorkDate))
+                            {
+                                var totalHours = (rec.CheckInTime.HasValue && rec.CheckOutTime.HasValue) 
+                                    ? (rec.CheckOutTime.Value - rec.CheckInTime.Value).TotalHours.ToString("F2") 
+                                    : "--";
+                                    
+                                <tr class="border-b border-gray-50 hover:bg-emerald-50/30 transition-colors">
+                                    <td class="p-5 font-bold text-gray-900">@rec.WorkDate.ToString("dd/MM/yyyy")</td>
+                                    <td class="p-5">@(rec.CheckInTime?.ToString("HH:mm:ss") ?? "--:--:--")</td>
+                                    <td class="p-5">@(rec.CheckOutTime?.ToString("HH:mm:ss") ?? "--:--:--")</td>
+                                    <td class="p-5 text-right font-black text-emerald-600">@totalHours</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-gray-400 font-medium italic">
+                                    Không có dữ liệu chấm công cho tháng này.
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>

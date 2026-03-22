@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TimesheetTrackingSystemSWD.BLL.Interfaces;
 using TimesheetTrackingSystemSWD.DAL.Interfaces;
 using TimesheetTrackingSystemSWD.DAL.Models;
@@ -14,15 +15,18 @@ namespace TimesheetTrackingSystemSWD.BLL.Services
         private readonly IAttendanceRepository _attendanceRepository;
         private readonly ITimesheetRepository _timesheetRepository;
         private readonly TimesheetTrackingSystemSwdContext _context;
+        private readonly IConfiguration _configuration;
 
         public AttendanceService(
             IAttendanceRepository attendanceRepository,
             ITimesheetRepository timesheetRepository,
-            TimesheetTrackingSystemSwdContext context)
+            TimesheetTrackingSystemSwdContext context,
+            IConfiguration configuration)
         {
             _attendanceRepository = attendanceRepository;
             _timesheetRepository = timesheetRepository;
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<AttendanceRecord?> GetTodayAttendanceAsync(int userId)
@@ -35,8 +39,10 @@ namespace TimesheetTrackingSystemSWD.BLL.Services
             return records.FirstOrDefault();
         }
 
-        public async Task<bool> CheckInAsync(int userId)
+        public async Task<bool> CheckInAsync(int userId, string ipAddress)
         {
+            if (!IsValidIpAddress(ipAddress)) throw new Exception("IP_NOT_ALLOWED");
+
             var employee = await _timesheetRepository.GetEmployeeByUserIdAsync(userId);
             if (employee == null) return false;
 
@@ -57,8 +63,10 @@ namespace TimesheetTrackingSystemSWD.BLL.Services
             return true;
         }
 
-        public async Task<bool> CheckOutAsync(int userId)
+        public async Task<bool> CheckOutAsync(int userId, string ipAddress)
         {
+            if (!IsValidIpAddress(ipAddress)) throw new Exception("IP_NOT_ALLOWED");
+
             var employee = await _timesheetRepository.GetEmployeeByUserIdAsync(userId);
             if (employee == null) return false;
 
@@ -74,6 +82,24 @@ namespace TimesheetTrackingSystemSWD.BLL.Services
             _context.AttendanceRecords.Update(record);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<AttendanceRecord>> GetMonthlyAttendanceAsync(int userId, int year, int month)
+        {
+            var employee = await _timesheetRepository.GetEmployeeByUserIdAsync(userId);
+            if (employee == null) return new List<AttendanceRecord>();
+
+            var startDate = new DateOnly(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            return await _attendanceRepository.GetAttendanceRecordsByEmployeeIdAndPeriodAsync(employee.EmployeeId, startDate, endDate);
+        }
+
+        private bool IsValidIpAddress(string ipAddress)
+        {
+            var allowedIps = _configuration.GetSection("CompanyWifiIPs").GetChildren().Select(x => x.Value).ToList();
+            if (allowedIps == null || allowedIps.Count == 0) return true; // If not configured, allow all for demo purposes
+            return allowedIps.Contains(ipAddress);
         }
     }
 }
