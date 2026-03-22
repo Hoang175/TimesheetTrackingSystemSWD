@@ -22,6 +22,9 @@ namespace TimesheetTrackingSystemSWD
 
             // DI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            builder.Services.AddScoped<ITimesheetRepository, TimesheetRepository>();
+            builder.Services.AddScoped<ISystemLogRepository, SystemLogRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();

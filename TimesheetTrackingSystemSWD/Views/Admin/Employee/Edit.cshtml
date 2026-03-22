@@ -1,0 +1,131 @@
+﻿@model TimesheetTrackingSystemSWD.BLL.DTOs.AdEmployee.AdEmployeeUpdateDTO
+
+@{
+    ViewData["Title"] = "Cập Nhật Nhân Viên";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-extrabold text-gray-800">Cập Nhật Hồ Sơ</h2>
+                <p class="text-sm text-gray-500">Chỉnh sửa thông tin phòng ban, chức vụ.</p>
+            </div>
+            <a href="/TimesheetTrackingSystem/admin/employees" class="flex items-center text-sm text-gray-500 hover:text-emerald-600 transition-colors group">
+                <i class="fa-solid fa-arrow-left-long mr-2 transition-transform group-hover:-translate-x-1"></i>
+                Quay lại
+            </a>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="mb-4 p-4 bg-red-50 text-red-700 rounded-lg shadow-sm" role="alert"></div>
+
+        <form action="/TimesheetTrackingSystem/admin/employees/edit/@Model.EmployeeId" method="post" class="space-y-6">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="EmployeeId" />
+            <input type="hidden" asp-for="HasAccount" />
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-5 pb-3 border-b border-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-emerald-500"></i> Chỉnh Sửa Thông Tin
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Họ và tên <span class="text-red-500">*</span></label>
+                        <input asp-for="FullName" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" />
+                        <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1 block"></span>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Email <span class="text-red-500">*</span></label>
+                        <input asp-for="Email" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" />
+                        <span asp-validation-for="Email" class="text-xs text-red-500 mt-1 block"></span>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Phòng ban</label>
+                        <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer">
+                            <option value="">-- Chọn phòng ban --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Chức danh</label>
+                        <input asp-for="Position" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Ngày vào làm</label>
+                        <input asp-for="HireDate" type="date" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" />
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.HasAccount)
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">Tài khoản đã được cấp</p>
+                            <p class="text-xs text-gray-500">Nhân viên này đã có quyền truy cập vào hệ thống.</p>
+                        </div>
+                    </div>
+
+                    <a href="/TimesheetTrackingSystem/admin/users?keyword=@Model.Email" class="px-5 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all shadow-sm flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-users-gear"></i> Xem tài khoản
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-user-shield text-indigo-500"></i> Cấp Tài Khoản Bổ Sung
+                        </h3>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" asp-for="IsCreateAccount" id="toggleAccount" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
+                        </label>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 pb-4 border-b border-gray-100">Bật tuỳ chọn này nếu bạn muốn cấp quyền đăng nhập cho nhân viên lúc này.</p>
+
+                    <div id="accountFields" class="hidden space-y-4">
+                        <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100 text-sm text-indigo-800">
+                            <i class="fa-solid fa-circle-info mr-2"></i> <strong>Username</strong> sẽ được hệ thống tạo tự động dựa trên Tên và Mã NV. Role mặc định là <strong>Employee</strong>.
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Mật khẩu khởi tạo</label>
+                            <input asp-for="Password" type="text" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Mặc định nếu để trống: 123" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="flex justify-end gap-3 pt-4">
+                <a href="/TimesheetTrackingSystem/admin/employees" class="px-6 py-3 rounded-xl bg-white border border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition-all">Huỷ bỏ</a>
+                <button type="submit" class="px-6 py-3 rounded-xl bg-emerald-600 text-white font-bold shadow-md hover:bg-emerald-700 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Cập nhật
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toggle = document.getElementById('toggleAccount');
+            const fields = document.getElementById('accountFields');
+            if (toggle && fields) {
+                function updateVisibility() {
+                    if (toggle.checked) { fields.classList.remove('hidden'); }
+                    else { fields.classList.add('hidden'); }
+                }
+                toggle.addEventListener('change', updateVisibility);
+                updateVisibility();
+            }
+        });
+    </script>
+}
