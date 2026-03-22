@@ -5,38 +5,38 @@
     Layout = "~/Views/Shared/_HrLayout.cshtml";
 }
 
-<div class="space-y-6">
-
-    <!-- TITLE -->
+<div class="px-8 py-6 bg-white border-b border-gray-100 shadow-sm flex items-center justify-between">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">
-            📝 Timesheet Logs
-        </h1>
-        <p class="text-gray-500 text-sm">
-            Lịch sử duyệt bảng chấm công (Approve / Reject)
-        </p>
+        <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-white shadow-lg">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </span>
+            Nhật Ký Hệ Thống
+        </h2>
+        <p class="text-sm text-gray-500 mt-1 ml-14">Tra cứu lịch sử thao tác phê duyệt bảng chấm công.</p>
     </div>
+</div>
 
-    <!-- TABLE -->
-    <div class="bg-white shadow rounded-xl overflow-hidden border">
-
-        <table class="min-w-full text-sm text-left">
-            <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+<div class="p-8 min-h-screen">
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-600 font-bold uppercase text-xs tracking-wider border-b border-gray-200">
                 <tr>
-                    <th class="px-6 py-3">User</th>
-                    <th class="px-6 py-3">Action</th>
-                    <th class="px-6 py-3">Status</th>
-                    <th class="px-6 py-3">Time</th>
+                    <th class="px-6 py-4">Tài khoản thao tác</th>
+                    <th class="px-6 py-4 w-1/2">Chi tiết hành động</th>
+                    <th class="px-6 py-4 text-center">Phân loại</th>
+                    <th class="px-6 py-4 text-right">Thời gian</th>
                 </tr>
             </thead>
-
-            <tbody class="divide-y">
-
+            <tbody class="divide-y divide-gray-100">
                 @if (!Model.Any())
                 {
                     <tr>
-                        <td colspan="4" class="text-center py-10 text-gray-500">
-                            Không có log nào
+                        <td colspan="4" class="text-center py-16 text-gray-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fa-solid fa-inbox text-4xl text-gray-300 mb-3"></i>
+                                <p>Chưa có dữ liệu lịch sử nào được ghi nhận.</p>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -44,54 +44,37 @@
                 {
                     foreach (var log in Model)
                     {
-                        var isApprove = log.Action.Contains("Approve");
-                        var isReject = log.Action.Contains("Reject");
+                        var isApprove = log.Action.Contains("Approve", StringComparison.OrdinalIgnoreCase);
+                        var isReject = log.Action.Contains("Reject", StringComparison.OrdinalIgnoreCase);
 
-                        <tr class="hover:bg-gray-50 transition">
-
-                            <!-- USER -->
-                            <td class="px-6 py-4 font-medium text-gray-800">
-                                @log.User.FullName
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-gray-700">
+                                @(log.User?.FullName ?? "System")
                             </td>
-
-                            <!-- ACTION -->
-                            <td class="px-6 py-4 text-gray-700">
+                            <td class="px-6 py-4 text-gray-600">
                                 @log.Action
                             </td>
-
-                            <!-- STATUS BADGE -->
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 text-center">
                                 @if (isApprove)
                                 {
-                                    <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                                        Approved
-                                    </span>
+                                    <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wide rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">Approved</span>
                                 }
                                 else if (isReject)
                                 {
-                                    <span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700">
-                                        Rejected
-                                    </span>
+                                    <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wide rounded-full bg-red-100 text-red-700 border border-red-200">Rejected</span>
                                 }
                                 else
                                 {
-                                    <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-600">
-                                        Other
-                                    </span>
+                                    <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wide rounded-full bg-gray-100 text-gray-600 border border-gray-200">Other</span>
                                 }
                             </td>
-
-                            <!-- TIME -->
-                            <td class="px-6 py-4 text-gray-500">
+                            <td class="px-6 py-4 text-right font-mono text-xs text-gray-500">
                                 @log.Timestamp?.ToString("dd/MM/yyyy HH:mm")
                             </td>
-
                         </tr>
                     }
                 }
-
             </tbody>
         </table>
     </div>
-
 </div>

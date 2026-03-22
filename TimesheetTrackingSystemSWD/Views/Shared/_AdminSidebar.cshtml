@@ -9,12 +9,15 @@
     var firstLetter = !string.IsNullOrEmpty(fullName) ? fullName.Substring(0, 1).ToUpper() : "A";
 
     var path = HttpContextAccessor.HttpContext?.Request.Path.Value?.ToLower() ?? "";
-    // string IsActive(string checkPath) => path.Contains(checkPath) ? "active bg-emerald-100 text-emerald-700" : "text-gray-600 hover:bg-gray-50 hover:text-emerald-600";
-    // Cập nhật hàm IsActive
+
+    // Cập nhật hàm IsActive mạnh mẽ hơn, tự động ép kiểu chữ thường để tránh lỗi
     string IsActive(string checkPath, bool exact = false)
     {
-        if (exact) return path == checkPath || path == checkPath + "/" ? "active bg-emerald-100 text-emerald-700" : "text-gray-600 hover:bg-gray-50 hover:text-emerald-600";
-        return path.StartsWith(checkPath) ? "active bg-emerald-100 text-emerald-700" : "text-gray-600 hover:bg-gray-50 hover:text-emerald-600";
+        checkPath = checkPath.ToLower();
+        if (exact)
+            return path == checkPath || path == checkPath + "/" ? "active bg-emerald-100 text-emerald-700 font-bold" : "text-gray-600 hover:bg-gray-50 hover:text-emerald-600";
+
+        return path.StartsWith(checkPath) ? "active bg-emerald-100 text-emerald-700 font-bold" : "text-gray-600 hover:bg-gray-50 hover:text-emerald-600";
     }
 }
 
@@ -41,30 +44,27 @@
     <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         <p class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-4">Tổng quan</p>
 
-
-        <a href="/TimesheetTrackingSystem/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/timesheettrackingsystem/admin", true)">
-            @* <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-            <span>Dashboard</span> *@
+        <a href="/TimesheetTrackingSystem/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/TimesheetTrackingSystem/admin", true)">
             <i class="fa-solid fa-house-chimney w-5 text-center"></i>
             <span>Trang chủ</span>
         </a>
 
-        <a href="/TimesheetTrackingSystem/admin/employees" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/timesheettrackingsystem/admin/employees")">
+        <a href="/TimesheetTrackingSystem/admin/employees" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/TimesheetTrackingSystem/admin/employees")">
             <i class="fa-solid fa-id-card-clip w-5 text-center"></i>
             <span>Quản lý Nhân viên</span>
         </a>
 
         <p class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-6">Quản trị</p>
-        <a href="/TimesheetTrackingSystem/admin/users" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/admin/users")">
+
+        <a href="/TimesheetTrackingSystem/admin/users" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/TimesheetTrackingSystem/admin/users")">
             <i class="fa-solid fa-users-gear w-5 text-center"></i>
             <span>Quản lý Tài khoản</span>
         </a>
 
-        <a href="/TimesheetTrackingSystem/admin/departments" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/timesheettrackingsystem/admin/departments")">
+        <a href="/TimesheetTrackingSystem/admin/departments" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors @IsActive("/TimesheetTrackingSystem/admin/departments")">
             <i class="fa-solid fa-building-user w-5 text-center"></i>
             <span>Quản lý Phòng ban</span>
         </a>
-
 
     </nav>
 
