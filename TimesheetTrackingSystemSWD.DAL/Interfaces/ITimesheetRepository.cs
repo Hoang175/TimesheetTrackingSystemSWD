@@ -12,5 +12,8 @@ namespace TimesheetTrackingSystemSWD.DAL.Interfaces
         Task<Timesheet> CreateTimesheetAsync(Timesheet timesheet);
         Task UpdateTimesheetAsync(Timesheet timesheet);
         Task<Employee?> GetEmployeeByUserIdAsync(int userId);
+        Task<IEnumerable<Timesheet>> GetPendingTimesheetsAsync();
+        Task<int> CountByStatusAsync(string status);
+        Task<Timesheet?> GetByIdAsync(int timesheetId);
     }
 }

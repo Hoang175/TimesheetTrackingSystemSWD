@@ -19,5 +19,14 @@ namespace TimesheetTrackingSystemSWD.DAL.Repositories
             _context.SystemLogs.Add(log);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<SystemLog>> GetTimesheetLogsAsync()
+        {
+            return await _context.SystemLogs
+                .Include(l => l.User)
+                .Where(l => l.Action.Contains("Timesheet"))
+                .OrderByDescending(l => l.Timestamp)
+                .ToListAsync();
+        }
     }
 }
