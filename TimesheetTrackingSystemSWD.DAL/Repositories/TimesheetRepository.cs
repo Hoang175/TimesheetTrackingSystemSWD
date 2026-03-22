@@ -50,5 +50,26 @@ namespace TimesheetTrackingSystemSWD.DAL.Repositories
                 .Include(e => e.User)
                 .FirstOrDefaultAsync(e => e.UserId == userId && e.IsDeleted == false);
         }
+
+        public async Task<IEnumerable<Timesheet>> GetPendingTimesheetsAsync()
+        {
+            return await _context.Timesheets
+                .Include(t => t.Employee)
+                .Where(t => t.Status == "Pending" && t.IsDeleted == false)
+                .ToListAsync();
+        }
+
+        public async Task<int> CountByStatusAsync(string status)
+        {
+            return await _context.Timesheets
+                .Where(t => t.Status == status && t.IsDeleted != true)
+                .CountAsync();
+        }
+
+        public async Task<Timesheet?> GetByIdAsync(int timesheetId)
+        {
+            return await _context.Timesheets
+                .FirstOrDefaultAsync(t => t.TimesheetId == timesheetId);
+        }
     }
 }

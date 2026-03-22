@@ -11,5 +11,10 @@ namespace TimesheetTrackingSystemSWD.BLL.Interfaces
         Task<TimesheetSubmissionDTO> GetCurrentTimesheetSubmissionDataAsync(int userId);
         Task<bool> SubmitTimesheetAsync(int userId, DateOnly periodStart, DateOnly periodEnd);
         Task<Employee?> GetEmployeeProfileAsync(int userId);
+
+        Task<IEnumerable<Timesheet>> GetPendingTimesheetsAsync();
+        Task<int> CountByStatusAsync(string status);
+        Task ApproveAsync(int timesheetId, int hrId);
+        Task RejectAsync(int timesheetId, int hrId);
     }
 }

@@ -7,5 +7,6 @@ namespace TimesheetTrackingSystemSWD.DAL.Interfaces
     public interface ISystemLogRepository
     {
         Task CreateLogAsync(SystemLog log);
+        Task<IEnumerable<SystemLog>> GetTimesheetLogsAsync();
     }
 }
