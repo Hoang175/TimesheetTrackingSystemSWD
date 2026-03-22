@@ -186,5 +186,59 @@ namespace TimesheetTrackingSystemSWD.BLL.Services
             var duration = checkOut.Value - checkIn.Value;
             return (decimal)Math.Round(duration.TotalHours, 2);
         }
+
+        public async Task<IEnumerable<Timesheet>> GetPendingTimesheetsAsync()
+        {
+            return await _timesheetRepository.GetPendingTimesheetsAsync();
+        }
+
+        public async Task<int> CountByStatusAsync(string status)
+        {
+            return await _timesheetRepository.CountByStatusAsync(status);
+        }
+
+        public async Task ApproveAsync(int timesheetId, int hrId)
+        {
+            var ts = await _timesheetRepository.GetByIdAsync(timesheetId);
+
+            if (ts == null || ts.Status != "Pending")
+                throw new Exception("Timesheet không hợp lệ hoặc đã được xử lý");
+
+            // Update status
+            ts.Status = "Approved";
+            ts.ApprovedBy = hrId;
+            ts.ApprovedAt = DateTime.Now;
+
+            await _timesheetRepository.UpdateTimesheetAsync(ts);
+
+            // Ghi log
+            await _logRepository.CreateLogAsync(new SystemLog
+            {
+                UserId = hrId,
+                Action = $"Approved Timesheet ID = {timesheetId}",
+                Timestamp = DateTime.Now
+            });
+        }
+
+        public async Task RejectAsync(int timesheetId, int hrId)
+        {
+            var ts = await _timesheetRepository.GetByIdAsync(timesheetId);
+
+            if (ts == null || ts.Status != "Pending")
+                throw new Exception("Timesheet không hợp lệ hoặc đã được xử lý");
+
+            ts.Status = "Rejected";
+            ts.ApprovedBy = hrId;
+            ts.ApprovedAt = DateTime.Now;
+
+            await _timesheetRepository.UpdateTimesheetAsync(ts);
+
+            await _logRepository.CreateLogAsync(new SystemLog
+            {
+                UserId = hrId,
+                Action = $"Rejected Timesheet ID = {timesheetId}",
+                Timestamp = DateTime.Now
+            });
+        }
     }
 }

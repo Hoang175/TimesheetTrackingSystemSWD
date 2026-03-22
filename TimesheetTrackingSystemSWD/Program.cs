@@ -35,6 +35,7 @@ namespace TimesheetTrackingSystemSWD
             builder.Services.AddScoped<IAdDepartmentService, AdDepartmentService>();
             builder.Services.AddScoped<IAdEmployeeService, AdEmployeeService>();
             builder.Services.AddScoped<IAdUserService, AdUserService>();
+            builder.Services.AddScoped<ISystemLogService, SystemLogService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
