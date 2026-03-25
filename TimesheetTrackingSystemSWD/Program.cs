@@ -17,8 +17,13 @@ namespace TimesheetTrackingSystemSWD
             builder.Services.AddControllersWithViews();
 
             // DB Context
+            var connectionString =
+                builder.Configuration.GetConnectionString("MyCnn")
+                ?? builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string is missing. Please set ConnectionStrings:MyCnn or ConnectionStrings:DefaultConnection.");
+
             builder.Services.AddDbContext<TimesheetTrackingSystemSwdContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn")));
+                options.UseSqlServer(connectionString));
 
             // DI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
