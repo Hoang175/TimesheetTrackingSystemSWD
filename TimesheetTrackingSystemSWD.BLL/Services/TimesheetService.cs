@@ -240,5 +240,15 @@ namespace TimesheetTrackingSystemSWD.BLL.Services
                 Timestamp = DateTime.Now
             });
         }
+
+        public async Task<IEnumerable<Timesheet>> GetAllTimesheetsAsync()
+        {
+            return await _timesheetRepository.GetAllTimesheetsAsync();
+        }
+
+        public async Task<IEnumerable<Timesheet>> GetTimesheetsByStatusAsync(string status)
+        {
+            return await _timesheetRepository.GetTimesheetsByStatusAsync(status);
+        }
     }
 }

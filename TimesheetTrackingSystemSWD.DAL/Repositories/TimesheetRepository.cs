@@ -71,5 +71,25 @@ namespace TimesheetTrackingSystemSWD.DAL.Repositories
             return await _context.Timesheets
                 .FirstOrDefaultAsync(t => t.TimesheetId == timesheetId);
         }
+
+        public async Task<IEnumerable<Timesheet>> GetAllTimesheetsAsync()
+        {
+            return await _context.Timesheets
+                .Include(t => t.Employee)
+                .ThenInclude(e => e.User)
+                .Where(t => t.IsDeleted == false)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Timesheet>> GetTimesheetsByStatusAsync(string status)
+        {
+            return await _context.Timesheets
+                .Include(t => t.Employee)
+                .ThenInclude(e => e.User)
+                .Where(t => t.Status == status && t.IsDeleted == false)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

@@ -1,0 +1,180 @@
+﻿@model IEnumerable<TimesheetTrackingSystemSWD.DAL.Models.Timesheet>
+
+@{
+    ViewData["Title"] = "Quản lý Timesheet";
+    Layout = "~/Views/Shared/_HrLayout.cshtml";
+}
+
+<!-- HEADER -->
+<div class="px-8 py-6 bg-white border-b border-gray-100 shadow-sm flex items-center justify-between">
+    <div>
+        <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                <i class="fa-solid fa-file-signature"></i>
+            </span>
+            Quản Lý Timesheet
+        </h2>
+
+        <p class="text-sm text-gray-500 mt-1 ml-14">
+            @if (ViewBag.CurrentStatus == null)
+            {
+                <text>Tất cả bảng chấm công của nhân viên.</text>
+            }
+            else
+            {
+                <text>Danh sách timesheet trạng thái: <b>@ViewBag.CurrentStatus</b></text>
+            }
+        </p>
+    </div>
+</div>
+
+<!-- FILTER TAB -->
+<div class="px-8 pt-6">
+    <div class="flex gap-2">
+        <a href="/TimesheetTrackingSystem/hr/timesheets"
+           class="px-4 py-2 rounded-lg text-sm font-semibold border @(ViewBag.CurrentStatus == null ? "bg-emerald-600 text-white" : "bg-white text-gray-600")">
+            All
+        </a>
+
+        <a href="/TimesheetTrackingSystem/hr/timesheets?status=Pending"
+           class="px-4 py-2 rounded-lg text-sm font-semibold border @(ViewBag.CurrentStatus == "Pending" ? "bg-amber-500 text-white" : "bg-white text-gray-600")">
+            Pending
+        </a>
+
+        <a href="/TimesheetTrackingSystem/hr/timesheets?status=Approved"
+           class="px-4 py-2 rounded-lg text-sm font-semibold border @(ViewBag.CurrentStatus == "Approved" ? "bg-emerald-600 text-white" : "bg-white text-gray-600")">
+            Approved
+        </a>
+
+        <a href="/TimesheetTrackingSystem/hr/timesheets?status=Rejected"
+           class="px-4 py-2 rounded-lg text-sm font-semibold border @(ViewBag.CurrentStatus == "Rejected" ? "bg-red-500 text-white" : "bg-white text-gray-600")">
+            Rejected
+        </a>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="p-8 min-h-screen">
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-600 font-bold uppercase text-xs tracking-wider border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-4 text-center">ID</th>
+                    <th class="px-6 py-4">Nhân viên</th>
+                    <th class="px-6 py-4">Kỳ chấm công</th>
+                    <th class="px-6 py-4 text-center">Tổng giờ</th>
+                    <th class="px-6 py-4 text-center">Trạng thái</th>
+                    <th class="px-6 py-4 text-right">Hành động</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-100">
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-16 text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-2xl mb-3">
+                                    <i class="fa-solid fa-check-double"></i>
+                                </div>
+                                <h3 class="font-bold text-gray-700">Không có dữ liệu</h3>
+                                <p>Không tìm thấy timesheet phù hợp.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        var status = item.Status ?? "Pending";
+                        var statusClass = status switch
+                        {
+                            "Approved" => "bg-emerald-100 text-emerald-700 border-emerald-200",
+                            "Rejected" => "bg-red-100 text-red-700 border-red-200",
+                            _ => "bg-amber-100 text-amber-700 border-amber-200"
+                        };
+
+                        <tr class="hover:bg-emerald-50/30 transition">
+                            <td class="px-6 py-4 text-center font-mono font-bold text-gray-400">
+                                #@item.TimesheetId
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 bg-emerald-100 text-emerald-700 flex items-center justify-center rounded-full font-bold">
+                                        @(item.Employee?.EmployeeCode?.Substring(0, 1) ?? "U")
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-gray-800">@item.Employee?.User?.FullName</p>
+                                        <p class="text-xs text-gray-500">@item.Employee?.EmployeeCode</p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="px-6 py-4 text-gray-600">
+                                @item.PeriodStart.ToString("dd/MM/yyyy")
+                                →
+                                @item.PeriodEnd.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <span class="px-3 py-1 bg-gray-100 border rounded-lg font-bold">
+                                    @item.TotalWorkingHours h
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <span class="px-3 py-1 text-[10px] font-bold uppercase rounded-full border @statusClass">
+                                    @status
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    @if (status == "Pending")
+                                    {
+                                        <button onclick="handleAction('/TimesheetTrackingSystem/hr/approve/@item.TimesheetId','Approve')"
+                                                class="px-3 py-1 text-xs font-bold bg-emerald-50 text-emerald-600 border rounded-lg hover:bg-emerald-600 hover:text-white">
+                                            ✔ Duyệt
+                                        </button>
+
+                                        <button onclick="handleAction('/TimesheetTrackingSystem/hr/reject/@item.TimesheetId','Reject')"
+                                                class="px-3 py-1 text-xs font-bold bg-red-50 text-red-600 border rounded-lg hover:bg-red-600 hover:text-white">
+                                            ✖ Từ chối
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-xs text-gray-400 italic">Đã xử lý</span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function handleAction(url, type) {
+            let title = type === 'Approve' ? 'Duyệt Timesheet?' : 'Từ chối Timesheet?';
+            let confirmText = type === 'Approve' ? 'Đồng ý Duyệt' : 'Xác nhận Từ chối';
+
+            Swal.fire({
+                title: title,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+}
