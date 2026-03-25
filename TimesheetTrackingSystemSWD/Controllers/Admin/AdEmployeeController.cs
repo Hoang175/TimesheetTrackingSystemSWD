@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TimesheetTrackingSystemSWD.BLL.DTOs.AdEmployee;
@@ -46,10 +46,15 @@ namespace TimesheetTrackingSystemSWD.Controllers.Admin
 
         // --- CREATE ---
         [HttpGet("create")]
-        public IActionResult Create()
+        public IActionResult Create(int? deptId)
         {
-            LoadViewBags();
-            return View("~/Views/Admin/Employee/Create.cshtml", new AdEmployeeCreateDTO());
+            var dto = new AdEmployeeCreateDTO
+            {
+                DepartmentId = deptId
+            };
+
+            LoadViewBags(deptId);
+            return View("~/Views/Admin/Employee/Create.cshtml", dto);
         }
 
         [HttpPost("create")]
