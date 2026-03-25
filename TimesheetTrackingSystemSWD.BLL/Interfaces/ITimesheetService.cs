@@ -16,5 +16,7 @@ namespace TimesheetTrackingSystemSWD.BLL.Interfaces
         Task<int> CountByStatusAsync(string status);
         Task ApproveAsync(int timesheetId, int hrId);
         Task RejectAsync(int timesheetId, int hrId);
+        Task<IEnumerable<Timesheet>> GetAllTimesheetsAsync();
+        Task<IEnumerable<Timesheet>> GetTimesheetsByStatusAsync(string status);
     }
 }

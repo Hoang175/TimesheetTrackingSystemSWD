@@ -25,7 +25,7 @@
                     <p class="text-amber-700 text-sm">Hệ thống đang có <b>@ViewBag.PendingCount</b> bảng chấm công đang chờ bạn phê duyệt.</p>
                 </div>
             </div>
-            <a href="/TimesheetTrackingSystem/hr/timesheets" class="px-5 py-2.5 bg-amber-500 text-white rounded-xl font-bold shadow-md hover:bg-amber-600 transition-colors">
+            <a href="/TimesheetTrackingSystem/hr/timesheets?status=Pending" class="px-5 py-2.5 bg-amber-500 text-white rounded-xl font-bold shadow-md hover:bg-amber-600 transition-colors">
                 Xử lý ngay
             </a>
         </div>
@@ -52,14 +52,24 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-        <a href="/TimesheetTrackingSystem/hr/timesheets" class="group bg-emerald-600 p-10 rounded-[40px] shadow-xl hover:bg-emerald-700 hover:scale-[1.02] transition-all duration-500 relative overflow-hidden block">
+        <a href="/TimesheetTrackingSystem/hr/timesheets?status=Pending"
+           class="group bg-emerald-600 p-10 rounded-[40px] shadow-xl hover:bg-emerald-700 hover:scale-[1.02] transition-all duration-500 relative overflow-hidden block">
+
             <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full"></div>
+
             <div class="w-16 h-16 rounded-2xl bg-white/20 text-white flex items-center justify-center text-2xl mb-8 group-hover:rotate-12 transition-transform">
                 <i class="fa-solid fa-file-signature"></i>
             </div>
-            <h3 class="text-2xl font-black text-white mb-2 uppercase">Phê duyệt Timesheet</h3>
-            <p class="text-emerald-100 font-medium">Kiểm tra và xử lý bảng chấm công của nhân viên gửi lên hệ thống.</p>
+
+            <h3 class="text-2xl font-black text-white mb-2 uppercase">
+                Phê duyệt Timesheet
+            </h3>
+
+            <p class="text-emerald-100 font-medium">
+                Kiểm tra và xử lý bảng chấm công của nhân viên gửi lên hệ thống.
+            </p>
         </a>
+
 
         <a href="/TimesheetTrackingSystem/hr/logs" class="group bg-gray-900 p-10 rounded-[40px] shadow-xl hover:bg-gray-800 hover:scale-[1.02] transition-all duration-500 relative overflow-hidden block">
             <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full"></div>

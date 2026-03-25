@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TimesheetTrackingSystemSWD.BLL.Interfaces;
+using TimesheetTrackingSystemSWD.DAL.Models;
 
 namespace TimesheetTrackingSystemSWD.Controllers.Hr
 {
@@ -31,15 +32,27 @@ namespace TimesheetTrackingSystemSWD.Controllers.Hr
             return View("~/Views/Hr/Dashboard/Index.cshtml");
         }
 
-        // 2. DANH SÁCH PENDING
+        // 3. DANH SÁCH TIMESHEET (ALL + FILTER)
         [HttpGet("timesheets")]
-        public async Task<IActionResult> PendingList()
+        public async Task<IActionResult> TimesheetList(string? status)
         {
-            var data = await _timesheetService.GetPendingTimesheetsAsync();
-            return View("~/Views/Hr/Timesheet/PendingList.cshtml", data);
+            IEnumerable<Timesheet> data;
+
+            if (string.IsNullOrEmpty(status))
+            {
+                data = await _timesheetService.GetAllTimesheetsAsync();
+            }
+            else
+            {
+                data = await _timesheetService.GetTimesheetsByStatusAsync(status);
+            }
+
+            ViewBag.CurrentStatus = status;
+
+            return View("~/Views/Hr/Timesheet/TimesheetList.cshtml", data);
         }
 
-        // 3. APPROVE
+        // 4. APPROVE
         [HttpGet("approve/{id}")]
         public async Task<IActionResult> Approve(int id)
         {
@@ -50,10 +63,10 @@ namespace TimesheetTrackingSystemSWD.Controllers.Hr
 
             await _timesheetService.ApproveAsync(id, hrId.Value);
 
-            return RedirectToAction("PendingList");
+            return RedirectToAction("TimesheetList", new { status = "Pending" });
         }
 
-        // 4. REJECT
+        // 5. REJECT
         [HttpGet("reject/{id}")]
         public async Task<IActionResult> Reject(int id)
         {
@@ -64,10 +77,10 @@ namespace TimesheetTrackingSystemSWD.Controllers.Hr
 
             await _timesheetService.RejectAsync(id, hrId.Value);
 
-            return RedirectToAction("PendingList");
+            return RedirectToAction("TimesheetList", new { status = "Pending" });
         }
 
-        // Lấy user hiện tại
+        // 6. Lấy user hiện tại
         private int? GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -78,7 +91,7 @@ namespace TimesheetTrackingSystemSWD.Controllers.Hr
             return int.Parse(userIdClaim.Value);
         }
 
-        // 5. SYSTEM LOGS (Timesheet only)
+        // 7. SYSTEM LOGS (Timesheet only)
         [HttpGet("logs")]
         public async Task<IActionResult> Logs()
         {
